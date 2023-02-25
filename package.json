@@ -45,6 +45,14 @@
     "migrate": "knex migrate:latest",
     "migrate:make": "knex migrate:make"
   },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.2",
+    "prettier": "^2.8.4"
+  },
   "dependencies": {
     "@feathersjs/configuration": "^5.0.0",
     "@feathersjs/feathers": "^5.0.0",
