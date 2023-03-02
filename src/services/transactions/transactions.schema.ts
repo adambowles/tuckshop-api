@@ -12,6 +12,7 @@ export const transactionSchema = Type.Object(
   {
     _id: ObjectIdSchema(),
     user: ObjectIdSchema(),
+    //TODO figure this out
     items: Type.Array(
       Type.Object({
         item: ObjectIdSchema(),
