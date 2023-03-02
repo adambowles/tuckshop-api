@@ -11,7 +11,9 @@ import { dataValidator, queryValidator } from '../../validators';
 export const itemSchema = Type.Object(
   {
     _id: ObjectIdSchema(),
-    text: Type.String(),
+    name: Type.String(),
+    price: Type.Number(), // in pence
+    stockRemaining: Type.Number(),
   },
   { $id: 'Item', additionalProperties: false },
 );
@@ -22,9 +24,13 @@ export const itemResolver = resolve<Item, HookContext>({});
 export const itemExternalResolver = resolve<Item, HookContext>({});
 
 // Schema for creating new entries
-export const itemDataSchema = Type.Pick(itemSchema, ['text'], {
-  $id: 'ItemData',
-});
+export const itemDataSchema = Type.Pick(
+  itemSchema,
+  ['name', 'price', 'stockRemaining'],
+  {
+    $id: 'ItemData',
+  },
+);
 export type ItemData = Static<typeof itemDataSchema>;
 export const itemDataValidator = getValidator(itemDataSchema, dataValidator);
 export const itemDataResolver = resolve<Item, HookContext>({});
@@ -38,7 +44,12 @@ export const itemPatchValidator = getValidator(itemPatchSchema, dataValidator);
 export const itemPatchResolver = resolve<Item, HookContext>({});
 
 // Schema for allowed query properties
-export const itemQueryProperties = Type.Pick(itemSchema, ['_id', 'text']);
+export const itemQueryProperties = Type.Pick(itemSchema, [
+  '_id',
+  'name',
+  'price',
+  'stockRemaining',
+]);
 export const itemQuerySchema = Type.Intersect(
   [
     querySyntax(itemQueryProperties),
