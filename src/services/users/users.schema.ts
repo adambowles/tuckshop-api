@@ -12,7 +12,7 @@ export const userSchema = Type.Object(
   {
     _id: ObjectIdSchema(), // service number
     name: Type.String(),
-    unit: Type.String(),
+    rank: Type.String(),
   },
   { $id: 'User', additionalProperties: false },
 );
@@ -42,7 +42,7 @@ export const userPatchResolver = resolve<User, HookContext>({});
 export const userQueryProperties = Type.Pick(userSchema, [
   '_id',
   'name',
-  'unit',
+  'rank',
 ]);
 export const userQuerySchema = Type.Intersect(
   [
