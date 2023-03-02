@@ -11,7 +11,13 @@ import { dataValidator, queryValidator } from '../../validators';
 export const transactionSchema = Type.Object(
   {
     _id: ObjectIdSchema(),
-    text: Type.String(),
+    user: ObjectIdSchema(),
+    items: Type.Array(
+      Type.Object({
+        item: ObjectIdSchema(),
+        quantity: Type.Number(),
+      }),
+    ),
   },
   { $id: 'Transaction', additionalProperties: false },
 );
@@ -27,7 +33,7 @@ export const transactionExternalResolver = resolve<Transaction, HookContext>(
 );
 
 // Schema for creating new entries
-export const transactionDataSchema = Type.Pick(transactionSchema, ['text'], {
+export const transactionDataSchema = Type.Pick(transactionSchema, ['user'], {
   $id: 'TransactionData',
 });
 export type TransactionData = Static<typeof transactionDataSchema>;
@@ -51,7 +57,7 @@ export const transactionPatchResolver = resolve<Transaction, HookContext>({});
 // Schema for allowed query properties
 export const transactionQueryProperties = Type.Pick(transactionSchema, [
   '_id',
-  'text',
+  'user',
 ]);
 export const transactionQuerySchema = Type.Intersect(
   [
