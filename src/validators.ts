@@ -26,7 +26,7 @@ export const queryValidator: Ajv = addFormats(
   new Ajv({
     coerceTypes: true,
   }),
-  formats
+  formats,
 );
 
 dataValidator.addKeyword(keywordObjectId);

@@ -20,5 +20,5 @@ export type ApplicationConfiguration = Static<typeof configurationSchema>;
 
 export const configurationValidator = getValidator(
   configurationSchema,
-  dataValidator
+  dataValidator,
 );

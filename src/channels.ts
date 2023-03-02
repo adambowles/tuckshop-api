@@ -7,7 +7,7 @@ import { logger } from './logger';
 
 export const channels = (app: Application) => {
   logger.warn(
-    'Publishing all events to all authenticated users. See `channels.ts` and https://dove.feathersjs.com/api/channels.html for more information.'
+    'Publishing all events to all authenticated users. See `channels.ts` and https://dove.feathersjs.com/api/channels.html for more information.',
   );
 
   app.on('connection', (connection: RealTimeConnection) => {
@@ -27,7 +27,7 @@ export const channels = (app: Application) => {
         // Add it to the authenticated user channel
         app.channel('authenticated').join(connection);
       }
-    }
+    },
   );
 
   // eslint-disable-next-line no-unused-vars

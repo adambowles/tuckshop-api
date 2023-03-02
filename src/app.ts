@@ -38,7 +38,7 @@ app.configure(
     cors: {
       origin: app.get('origins'),
     },
-  })
+  }),
 );
 app.configure(channels);
 app.configure(mongodb);
