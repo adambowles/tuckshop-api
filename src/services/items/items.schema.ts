@@ -12,6 +12,7 @@ export const itemSchema = Type.Object(
   {
     _id: ObjectIdSchema(),
     name: Type.String(),
+    category: ObjectIdSchema(),
     price: Type.Number(), // in pence
     stockRemaining: Type.Number(),
   },
@@ -26,7 +27,7 @@ export const itemExternalResolver = resolve<Item, HookContext>({});
 // Schema for creating new entries
 export const itemDataSchema = Type.Pick(
   itemSchema,
-  ['name', 'price', 'stockRemaining'],
+  ['name', 'category', 'price', 'stockRemaining'],
   {
     $id: 'ItemData',
   },
@@ -47,6 +48,7 @@ export const itemPatchResolver = resolve<Item, HookContext>({});
 export const itemQueryProperties = Type.Pick(itemSchema, [
   '_id',
   'name',
+  'category',
   'price',
   'stockRemaining',
 ]);
