@@ -4,6 +4,14 @@ import type { TransportConnection, Application } from '@feathersjs/feathers';
 import authenticationClient from '@feathersjs/authentication-client';
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client';
 
+import { categoryClient } from './services/categories/categories.shared';
+export type {
+  Category,
+  CategoryData,
+  CategoryQuery,
+  CategoryPatch,
+} from './services/categories/categories.shared';
+
 import { transactionClient } from './services/transactions/transactions.shared';
 export type {
   Transaction,
@@ -57,5 +65,6 @@ export const createClient = <Configuration = any>(
   client.configure(userClient);
   client.configure(itemClient);
   client.configure(transactionClient);
+  client.configure(categoryClient);
   return client;
 };

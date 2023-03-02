@@ -1,3 +1,4 @@
+import { category } from './categories/categories';
 import { transaction } from './transactions/transactions';
 import { item } from './items/items';
 import { user } from './users/users';
@@ -5,6 +6,7 @@ import { user } from './users/users';
 import type { Application } from '../declarations';
 
 export const services = (app: Application) => {
+  app.configure(category);
   app.configure(transaction);
   app.configure(item);
   app.configure(user);
