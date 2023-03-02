@@ -10,8 +10,9 @@ import { dataValidator, queryValidator } from '../../validators';
 // Main data model schema
 export const userSchema = Type.Object(
   {
-    _id: ObjectIdSchema(),
-    text: Type.String(),
+    _id: ObjectIdSchema(), // service number
+    name: Type.String(),
+    unit: Type.String(),
   },
   { $id: 'User', additionalProperties: false },
 );
@@ -22,7 +23,7 @@ export const userResolver = resolve<User, HookContext>({});
 export const userExternalResolver = resolve<User, HookContext>({});
 
 // Schema for creating new entries
-export const userDataSchema = Type.Pick(userSchema, ['text'], {
+export const userDataSchema = Type.Pick(userSchema, ['name'], {
   $id: 'UserData',
 });
 export type UserData = Static<typeof userDataSchema>;
@@ -38,7 +39,11 @@ export const userPatchValidator = getValidator(userPatchSchema, dataValidator);
 export const userPatchResolver = resolve<User, HookContext>({});
 
 // Schema for allowed query properties
-export const userQueryProperties = Type.Pick(userSchema, ['_id', 'text']);
+export const userQueryProperties = Type.Pick(userSchema, [
+  '_id',
+  'name',
+  'unit',
+]);
 export const userQuerySchema = Type.Intersect(
   [
     querySyntax(userQueryProperties),
