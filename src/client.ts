@@ -4,6 +4,14 @@ import type { TransportConnection, Application } from '@feathersjs/feathers';
 import authenticationClient from '@feathersjs/authentication-client';
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client';
 
+import { itemClient } from './services/items/items.shared';
+export type {
+  Item,
+  ItemData,
+  ItemQuery,
+  ItemPatch,
+} from './services/items/items.shared';
+
 import { userClient } from './services/users/users.shared';
 export type {
   User,
@@ -39,5 +47,6 @@ export const createClient = <Configuration = any>(
   client.set('connection', connection);
 
   client.configure(userClient);
+  client.configure(itemClient);
   return client;
 };
