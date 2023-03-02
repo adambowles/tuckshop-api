@@ -13,6 +13,7 @@ export const userSchema = Type.Object(
     _id: ObjectIdSchema(), // service number
     name: Type.String(),
     rank: Type.String(),
+    number: Type.String(),
   },
   { $id: 'User', additionalProperties: false },
 );
@@ -23,9 +24,13 @@ export const userResolver = resolve<User, HookContext>({});
 export const userExternalResolver = resolve<User, HookContext>({});
 
 // Schema for creating new entries
-export const userDataSchema = Type.Pick(userSchema, ['name'], {
-  $id: 'UserData',
-});
+export const userDataSchema = Type.Pick(
+  userSchema,
+  ['name', 'rank', 'number'],
+  {
+    $id: 'UserData',
+  },
+);
 export type UserData = Static<typeof userDataSchema>;
 export const userDataValidator = getValidator(userDataSchema, dataValidator);
 export const userDataResolver = resolve<User, HookContext>({});
@@ -43,6 +48,7 @@ export const userQueryProperties = Type.Pick(userSchema, [
   '_id',
   'name',
   'rank',
+  'number',
 ]);
 export const userQuerySchema = Type.Intersect(
   [
