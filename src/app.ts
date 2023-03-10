@@ -15,7 +15,7 @@ import socketio from '@feathersjs/socketio';
 import { configurationValidator } from './configuration';
 import type { Application } from './declarations';
 import { logError } from './hooks/log-error';
-import { mongodb } from './mongodb';
+import { mongodb } from './mongodbConnector';
 import { services } from './services/index';
 import { channels } from './channels';
 
