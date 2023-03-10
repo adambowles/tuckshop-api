@@ -1,5 +1,5 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/application.html
-import { feathers } from '@feathersjs/feathers';
+import { feathers, type HookContext } from '@feathersjs/feathers';
 import configuration from '@feathersjs/configuration';
 import {
   koa,
@@ -49,7 +49,16 @@ app.hooks({
   around: {
     all: [logError],
   },
-  before: {},
+  before: {
+    create: [
+      async (context: HookContext) => {
+        context.data = {
+          ...context.data,
+          createdAt: new Date().toISOString(),
+        };
+      },
+    ],
+  },
   after: {},
   error: {},
 });
