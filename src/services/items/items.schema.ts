@@ -14,7 +14,7 @@ export const itemSchema = Type.Object(
   {
     _id: ObjectIdSchema(),
     name: Type.String(),
-    categoryId: Type.Number(),
+    categoryId: ObjectIdSchema(),
     category: Type.Ref(categorySchema),
     price: Type.Number(), // in pence
     stockRemaining: Type.Number(),
@@ -26,7 +26,7 @@ export const itemValidator = getValidator(itemSchema, dataValidator);
 export const itemResolver = resolve<Item, HookContext>({
   category: virtual(async (item, context) => {
     // Associate the category the item belongs to
-    return context.app.service('categories').get(item.categoryId);
+    return context.app.service('categories').get(item.categoryId as any);
   }),
 });
 
