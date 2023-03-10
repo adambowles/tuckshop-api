@@ -12,6 +12,8 @@ import {
 } from '@feathersjs/koa';
 import socketio from '@feathersjs/socketio';
 
+// import { schemaHooks } from '@feathersjs/schema';
+
 import { configurationValidator } from './configuration';
 import type { Application } from './declarations';
 import { logError } from './hooks/log-error';
@@ -49,16 +51,7 @@ app.hooks({
   around: {
     all: [logError],
   },
-  before: {
-    create: [
-      async (context: HookContext) => {
-        context.data = {
-          ...context.data,
-          createdAt: new Date().toISOString(),
-        };
-      },
-    ],
-  },
+  before: {},
   after: {},
   error: {},
 });
