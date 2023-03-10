@@ -1,5 +1,5 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
-import { resolve } from '@feathersjs/schema';
+import { resolve, virtual } from '@feathersjs/schema';
 import { Type, getValidator, querySyntax } from '@feathersjs/typebox';
 import { ObjectIdSchema } from '@feathersjs/typebox';
 import type { Static } from '@feathersjs/typebox';
@@ -10,11 +10,10 @@ import { dataValidator, queryValidator } from '../../validators';
 // Main data model schema
 export const userSchema = Type.Object(
   {
-    _id: ObjectIdSchema(), // service number?
-    createdAt: Type.String({ format: 'date-time' }),
+    _id: ObjectIdSchema(),
     name: Type.String(),
     rank: Type.String(),
-    number: Type.String(),
+    number: Type.String(), // service number
     department: Type.String(),
     servicePersonnel: Type.Boolean(),
   },
@@ -29,7 +28,7 @@ export const userExternalResolver = resolve<User, HookContext>({});
 // Schema for creating new entries
 export const userDataSchema = Type.Pick(
   userSchema,
-  ['createdAt', 'name', 'rank', 'number', 'department', 'servicePersonnel'],
+  ['name', 'rank', 'number', 'department', 'servicePersonnel'],
   {
     $id: 'UserData',
   },
@@ -49,7 +48,6 @@ export const userPatchResolver = resolve<User, HookContext>({});
 // Schema for allowed query properties
 export const userQueryProperties = Type.Pick(userSchema, [
   '_id',
-  'createdAt',
   'name',
   'rank',
   'number',

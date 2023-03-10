@@ -1,5 +1,5 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
-import { resolve } from '@feathersjs/schema';
+import { resolve, virtual } from '@feathersjs/schema';
 import { Type, getValidator, querySyntax } from '@feathersjs/typebox';
 import { ObjectIdSchema } from '@feathersjs/typebox';
 import type { Static } from '@feathersjs/typebox';
@@ -7,12 +7,15 @@ import type { Static } from '@feathersjs/typebox';
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
 
+import { categorySchema } from '../categories/categories.schema';
+
 // Main data model schema
 export const itemSchema = Type.Object(
   {
     _id: ObjectIdSchema(),
     name: Type.String(),
-    category: ObjectIdSchema(),
+    categoryId: Type.Number(),
+    category: Type.Ref(categorySchema),
     price: Type.Number(), // in pence
     stockRemaining: Type.Number(),
   },
@@ -20,14 +23,19 @@ export const itemSchema = Type.Object(
 );
 export type Item = Static<typeof itemSchema>;
 export const itemValidator = getValidator(itemSchema, dataValidator);
-export const itemResolver = resolve<Item, HookContext>({});
+export const itemResolver = resolve<Item, HookContext>({
+  category: virtual(async (item, context) => {
+    // Associate the category the item belongs to
+    return context.app.service('categories').get(item.categoryId);
+  }),
+});
 
 export const itemExternalResolver = resolve<Item, HookContext>({});
 
 // Schema for creating new entries
 export const itemDataSchema = Type.Pick(
   itemSchema,
-  ['name', 'category', 'price', 'stockRemaining'],
+  ['name', 'categoryId', 'price', 'stockRemaining'],
   {
     $id: 'ItemData',
   },
@@ -48,7 +56,7 @@ export const itemPatchResolver = resolve<Item, HookContext>({});
 export const itemQueryProperties = Type.Pick(itemSchema, [
   '_id',
   'name',
-  'category',
+  'categoryId',
   'price',
   'stockRemaining',
 ]);

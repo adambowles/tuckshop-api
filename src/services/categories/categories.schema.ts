@@ -1,5 +1,5 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
-import { resolve } from '@feathersjs/schema';
+import { resolve, virtual } from '@feathersjs/schema';
 import { Type, getValidator, querySyntax } from '@feathersjs/typebox';
 import { ObjectIdSchema } from '@feathersjs/typebox';
 import type { Static } from '@feathersjs/typebox';
@@ -7,17 +7,25 @@ import type { Static } from '@feathersjs/typebox';
 import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
 
+// import { itemSchema } from '../items/items.schema';
+
 // Main data model schema
 export const categorySchema = Type.Object(
   {
     _id: ObjectIdSchema(),
     name: Type.String(),
+    // items: Type.Array(Type.Ref(itemSchema)),
   },
   { $id: 'Category', additionalProperties: false },
 );
 export type Category = Static<typeof categorySchema>;
 export const categoryValidator = getValidator(categorySchema, dataValidator);
-export const categoryResolver = resolve<Category, HookContext>({});
+export const categoryResolver = resolve<Category, HookContext>({
+  // items: virtual(async (category, context) => {
+  //   // Associate the user that sent the message
+  //   return context.app.service('items').find({ id: category.id });
+  // }),
+});
 
 export const categoryExternalResolver = resolve<Category, HookContext>({});
 
