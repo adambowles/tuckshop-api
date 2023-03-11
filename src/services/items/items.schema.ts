@@ -25,8 +25,8 @@ export const itemSchema = Type.Object(
 export type Item = Static<typeof itemSchema>;
 export const itemValidator = getValidator(itemSchema, dataValidator);
 export const itemResolver = resolve<Item, HookContext>({
+  // Associate the category the item belongs to
   category: virtual(async (item, context) => {
-    // Associate the category the item belongs to
     return context.app.service('categories').get(item.categoryId as any);
   }),
 });
@@ -35,6 +35,8 @@ export const itemExternalResolver = resolve<Item, HookContext>({
   imageURL: async (value, item, context) => {
     return 'images/' + value;
   },
+  // API consumers don't need to see categoryId if category is populated
+  categoryId: async (value, user, context) => undefined,
 });
 
 // Schema for creating new entries
