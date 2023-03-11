@@ -21,7 +21,7 @@ export const transactionSchema = Type.Object(
     items: Type.Array(
       Type.Object({
         itemId: ObjectIdSchema(),
-        // item: itemSchema,
+        item: Type.Ref(itemSchema),
         quantity: Type.Number(),
       }),
     ),
