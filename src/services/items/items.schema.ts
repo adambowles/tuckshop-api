@@ -18,6 +18,7 @@ export const itemSchema = Type.Object(
     category: Type.Ref(categorySchema),
     price: Type.Number(), // in pence
     stockRemaining: Type.Number(),
+    imageURL: Type.String(),
   },
   { $id: 'Item', additionalProperties: false },
 );
@@ -30,12 +31,16 @@ export const itemResolver = resolve<Item, HookContext>({
   }),
 });
 
-export const itemExternalResolver = resolve<Item, HookContext>({});
+export const itemExternalResolver = resolve<Item, HookContext>({
+  imageURL: async (value, item, context) => {
+    return 'images/' + value;
+  },
+});
 
 // Schema for creating new entries
 export const itemDataSchema = Type.Pick(
   itemSchema,
-  ['name', 'categoryId', 'price', 'stockRemaining'],
+  ['name', 'categoryId', 'price', 'stockRemaining', 'imageURL'],
   {
     $id: 'ItemData',
   },
