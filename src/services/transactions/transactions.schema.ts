@@ -8,7 +8,6 @@ import type { HookContext } from '../../declarations';
 import { dataValidator, queryValidator } from '../../validators';
 
 import { userSchema } from '../users/users.schema';
-import { itemSchema } from '../items/items.schema';
 
 // Main data model schema
 export const transactionSchema = Type.Object(
@@ -21,7 +20,6 @@ export const transactionSchema = Type.Object(
     items: Type.Array(
       Type.Object({
         itemId: ObjectIdSchema(),
-        item: Type.Ref(itemSchema),
         quantity: Type.Number(),
       }),
     ),
