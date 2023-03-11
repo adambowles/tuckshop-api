@@ -76,9 +76,13 @@ export const transactionExternalResolver = resolve<Transaction, HookContext>({
 });
 
 // Schema for creating new entries
-export const transactionDataSchema = Type.Pick(transactionSchema, ['userId'], {
-  $id: 'TransactionData',
-});
+export const transactionDataSchema = Type.Pick(
+  transactionSchema,
+  ['userId', 'items', 'settled'],
+  {
+    $id: 'TransactionData',
+  },
+);
 export type TransactionData = Static<typeof transactionDataSchema>;
 export const transactionDataValidator = getValidator(
   transactionDataSchema,
@@ -105,6 +109,7 @@ export const transactionPatchResolver = resolve<Transaction, HookContext>({});
 export const transactionQueryProperties = Type.Pick(transactionSchema, [
   '_id',
   'userId',
+  'settled',
 ]);
 export const transactionQuerySchema = Type.Intersect(
   [
