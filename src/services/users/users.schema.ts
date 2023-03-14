@@ -26,6 +26,7 @@ export const userResolver = resolve<User, HookContext>({});
 
 export const userExternalResolver = resolve<User, HookContext>({
   // Find user's most purchased items
+  // This is pretty messy but SHOULD work 🤷
   favourites: virtual(async (user: User, context: HookContext) => {
     // context.params.provider is 'rest' when it's called via http, undefined
     // when internal
@@ -37,7 +38,47 @@ export const userExternalResolver = resolve<User, HookContext>({
         },
       });
 
-      return transactions;
+      const items = transactions.map((transaction) => transaction.items);
+
+      let flatItems: (typeof items)[0] = [];
+      items.forEach((item) => {
+        flatItems = flatItems.concat(item);
+      });
+
+      if (flatItems[0] === undefined) {
+        return [];
+      }
+
+      type Item = { itemId: string; quantity: number };
+
+      const deduplicatedItems: any = {};
+
+      flatItems.forEach((item) => {
+        if (deduplicatedItems[item.itemId as string]) {
+          // If it already exists, increment it
+          deduplicatedItems[item.itemId as string] =
+            deduplicatedItems[item.itemId as string] + item.quantity;
+        } else {
+          // Otherwise instantiate it
+          deduplicatedItems[item.itemId as string] = item.quantity;
+        }
+      });
+
+      let sortedItems: Array<Item> = [];
+      Object.keys(deduplicatedItems).forEach((key) => {
+        sortedItems = sortedItems.concat({
+          itemId: key,
+          quantity: deduplicatedItems[key],
+        });
+      });
+
+      // Sort by most purchased quantity
+      sortedItems.sort((a, b) => {
+        return b.quantity - a.quantity;
+      });
+
+      // Return top 10
+      return sortedItems.slice(0, 10);
     }
   }),
 } as any);
