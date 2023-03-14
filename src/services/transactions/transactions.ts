@@ -13,7 +13,7 @@ import {
   transactionQueryResolver,
 } from './transactions.schema';
 
-import type { Application } from '../../declarations';
+import type { Application, HookContext } from '../../declarations';
 import { TransactionService, getOptions } from './transactions.class';
 import { transactionPath, transactionMethods } from './transactions.shared';
 
@@ -45,6 +45,48 @@ export const transaction = (app: Application) => {
       find: [],
       get: [],
       create: [
+        // Determine if stock is available
+        async (context: HookContext) => {
+          console.log('context.data.items =', context.data.items);
+
+          let itemIds: string[] = [];
+          if (context.data?.items?.length) {
+            itemIds = context.data.items.map(
+              (item: { itemId: string }) => item.itemId,
+            );
+          }
+
+          const items = await context.app.service('items').find({
+            paginate: false,
+            query: {
+              _id: {
+                $in: itemIds,
+              },
+            },
+          });
+
+          if (items.length !== context.data.items.length) {
+            //TODO Report which item wan't found
+            throw new Error('Item(s) not found');
+          }
+
+          context.data.items.forEach(
+            (item: { itemId: string; quantity: number }) => {
+              const exists = items.find((i) => String(i._id) === item.itemId);
+
+              // Reject the request if stock is inufficient
+              if (Number(exists?.stockRemaining) < item.quantity) {
+                throw new Error(
+                  `Insufficient stock for item id ${item.itemId} (${
+                    exists?.name
+                  }). Have ${Number(exists?.stockRemaining)}, need ${
+                    item.quantity
+                  }`,
+                );
+              }
+            },
+          );
+        },
         schemaHooks.validateData(transactionDataValidator),
         schemaHooks.resolveData(transactionDataResolver),
       ],
@@ -56,6 +98,24 @@ export const transaction = (app: Application) => {
     },
     after: {
       all: [],
+      create: [
+        // Decrement stock
+        async (context: HookContext) => {
+          context.data.items.forEach(
+            async (item: { itemId: string; quantity: number }) => {
+              // Find the item in the db
+              const dbItem = await context.app
+                .service('items')
+                .get(item.itemId);
+
+              // Decrement the amount being purchased
+              context.app.service('items').patch(item.itemId, {
+                stockRemaining: dbItem.stockRemaining - item.quantity,
+              });
+            },
+          );
+        },
+      ],
     },
     error: {
       all: [],
