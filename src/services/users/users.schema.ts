@@ -16,6 +16,7 @@ export const userSchema = Type.Object(
     number: Type.String(), // service number
     department: Type.String(),
     servicePersonnel: Type.Boolean(),
+    favourites: Type.Array(ObjectIdSchema()),
   },
   { $id: 'User', additionalProperties: false },
 );
@@ -23,7 +24,23 @@ export type User = Static<typeof userSchema>;
 export const userValidator = getValidator(userSchema, dataValidator);
 export const userResolver = resolve<User, HookContext>({});
 
-export const userExternalResolver = resolve<User, HookContext>({});
+export const userExternalResolver = resolve<User, HookContext>({
+  // Find user's most purchased items
+  favourites: virtual(async (user: User, context: HookContext) => {
+    // context.params.provider is 'rest' when it's called via http, undefined
+    // when internal
+    if (context.params.provider) {
+      const transactions = await context.app.service('transactions').find({
+        paginate: false,
+        query: {
+          userId: user._id,
+        },
+      });
+
+      return transactions;
+    }
+  }),
+} as any);
 
 // Schema for creating new entries
 export const userDataSchema = Type.Pick(

@@ -32,48 +32,48 @@ export const transactionValidator = getValidator(
   transactionSchema,
   dataValidator,
 );
-export const transactionResolver = resolve<Transaction, HookContext>({
+export const transactionResolver = resolve<Transaction, HookContext>({});
+
+export const transactionExternalResolver = resolve<Transaction, HookContext>({
   // Associate the user that made the transaction
   user: virtual(async (transaction: Transaction, context: HookContext) => {
     // TODO I hate using `any`
     return context.app.service('users').get(transaction.userId as any);
   }),
+  // API consumers don't need to see userId if user is populated
+  userId: async () => undefined,
   // Populate the items
   items: virtual(async (transaction: Transaction, context: HookContext) => {
-    const itemIds = (transaction.items || []).map((item) => item.itemId);
+    // context.params.provider is 'rest' when it's called via http, undefined
+    // when internal
+    if (context.params.provider) {
+      const itemIds = (transaction.items || []).map((item) => item.itemId);
 
-    if (!itemIds.length) {
-      return undefined;
-    }
+      if (!itemIds.length) {
+        return undefined;
+      }
 
-    const items = await context.app.service('items').find({
-      paginate: false,
-      query: {
-        _id: {
-          $in: itemIds,
+      const items = await context.app.service('items').find({
+        paginate: false,
+        query: {
+          _id: {
+            $in: itemIds,
+          },
         },
-      },
-    });
+      });
 
-    return items.map((item) => {
-      const foundItem = transaction.items.find(
-        (tItem) => String(item._id) === String(tItem.itemId),
-      );
+      return items.map((item) => {
+        const foundItem = transaction.items.find(
+          (tItem) => String(item._id) === String(tItem.itemId),
+        );
 
-      const quantity = foundItem?.quantity;
+        const quantity = foundItem?.quantity;
 
-      return {
-        item: item,
-        quantity,
-      };
-    });
+        return { item, quantity };
+      });
+    }
   }),
 } as any);
-
-export const transactionExternalResolver = resolve<Transaction, HookContext>({
-  // API consumers don't need to see userId if user is populated
-  userId: async (value, user, context) => undefined,
-});
 
 // Schema for creating new entries
 export const transactionDataSchema = Type.Pick(
