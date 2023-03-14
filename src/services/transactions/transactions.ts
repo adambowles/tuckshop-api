@@ -47,8 +47,6 @@ export const transaction = (app: Application) => {
       create: [
         // Determine if stock is available
         async (context: HookContext) => {
-          console.log('context.data.items =', context.data.items);
-
           let itemIds: string[] = [];
           if (context.data?.items?.length) {
             itemIds = context.data.items.map(
